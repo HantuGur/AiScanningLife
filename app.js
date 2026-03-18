@@ -6,7 +6,7 @@
 
 // ── Konfigurasi API ─────────────────────────────────────────
 const CONFIG = {
-  API_KEY:  "sk-elHciW1cJjGB5f33vHjo8g",
+  API_KEY:  "sk-yju9L_G3JaL8bzclokHUOQ",
   API_BASE: "https://litellm.koboi2026.biz.id/v1/chat/completions",
   MODEL:    "openai/gpt-5.2",
 };
