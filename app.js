@@ -483,73 +483,12 @@ function DiagnosisView({ scan, onBack, onUpdate }) {
       ? Math.round(((scan.screentime + scan.sosmedTime) / 2))
       : null;
 
-    const prompt = `Kamu adalah AI Life Scanner — sistem diagnosis kondisi hidup dan kerja berbasis data nyata tahun 2026.
+    const prompt = `Diagnosis kondisi hidup minggu ini. Balas HANYA JSON, tanpa teks lain.
 
-DATA MINGGU INI (${fmt(scan.createdAt)}):
+Data: tidur ${scan.avgSleep}j, energi ${scan.energy}/5, mood ${moodLabel}, task selesai ${scan.taskDone} tertunda ${scan.taskPending} (CR ${completion}%), deep work ${scan.deepWork}j/hr, mode kerja ${scan.workMode||"-"}, drains: ${scan.drains?.join(",")||"-"}, screentime ${scan.screentime||0}j, sosmed ${scan.sosmedTime||0}j, AI tools ${scan.aiToolsTime||0}j, olahraga ${scan.exercise||0}x/mgg, side hustle ${scan.hasSideHustle?"ya":"tidak"}, stress finansial ${finLabel}, pengeluaran ${scan.topExpense||"-"}, catatan: "${scan.note||"-"}"
 
-[FISIK & MENTAL]
-- Rata-rata tidur: ${scan.avgSleep} jam/malam
-- Level energi: ${scan.energy}/5
-- Mood dominan: ${moodLabel}
-
-[PEKERJAAN & PRODUKTIVITAS]
-- Task selesai: ${scan.taskDone} | Task tertunda: ${scan.taskPending} (completion rate: ${completion}%)
-- Deep work per hari: ${scan.deepWork} jam
-- Mode kerja: ${scan.workMode || "tidak diisi"}
-- Energy drains: ${scan.drains?.length > 0 ? scan.drains.join(", ") : "tidak dipilih"}
-
-[DIGITAL & GAYA HIDUP 2026]
-- Total screentime HP: ${scan.screentime || 0} jam/hari
-- Waktu di sosial media: ${scan.sosmedTime || 0} jam/hari
-- Penggunaan AI tools: ${scan.aiToolsTime || 0} jam/hari
-- Olahraga: ${scan.exercise || 0} hari/minggu
-- Punya side hustle: ${scan.hasSideHustle === true ? "Ya" : scan.hasSideHustle === false ? "Tidak" : "tidak diisi"}
-- Catatan digital: "${scan.digitalNote || "tidak diisi"}"
-
-[FINANSIAL]
-- Stress finansial: ${finLabel}
-- Pengeluaran terbesar: ${scan.topExpense || "tidak diisi"}
-
-[CATATAN PENGGUNA]
-"${scan.note || "tidak diisi"}"
-
-Hasilkan diagnosis dalam format JSON (HANYA JSON, tanpa teks lain):
-{
-  "status": "satu kata: KRITIS / OVERLOADED / TERFRAGMENTASI / STABIL / OPTIMAL",
-  "statusColor": "red / amber / blue / green",
-  "headline": "satu kalimat diagnosis utama yang tajam dan spesifik ke data ini",
-  "bottlenecks": [
-    {
-      "masalah": "deskripsi bottleneck konkret berbasis data",
-      "solusi": "cara konkret mengatasinya — spesifik, bisa langsung dilakukan, bukan generik"
-    },
-    {
-      "masalah": "deskripsi bottleneck kedua",
-      "solusi": "cara konkret mengatasinya"
-    }
-  ],
-  "digitalHealth": {
-    "score": "BAIK / WASPADA / KRITIS",
-    "scoreColor": "green / amber / red",
-    "finding": "satu kalimat temuan spesifik soal kebiasaan digital pengguna ini"
-  },
-  "leaks": ["kebocoran energi/waktu/uang yang terdeteksi dari data"],
-  "strengths": ["hal yang berjalan baik dari data ini"],
-  "actions": [
-    {"time": "Hari ini",   "action": "tindakan konkret spesifik, langsung bisa dilakukan"},
-    {"time": "3 hari ini", "action": "tindakan konkret spesifik"},
-    {"time": "Minggu ini", "action": "tindakan konkret spesifik"}
-  ],
-  "insight": "1-2 kalimat insight mendalam yang spesifik ke pola data pengguna ini — sesuatu yang tidak akan mereka sadari sendiri"
-}
-
-PENTING:
-- Kembalikan HANYA JSON murni. Tidak ada teks sebelum atau sesudah JSON.
-- Tidak ada markdown, tidak ada \`\`\`json, langsung { ... }
-- Semua field wajib diisi
-- Bottleneck.solusi harus konkret dan langsung bisa dilakukan
-- Jika screentime > 6 jam, wajib dibahas di digitalHealth
-- Jika sosmed > 3 jam, wajib masuk ke leaks`;
+JSON yang harus dikembalikan:
+{"status":"KRITIS/OVERLOADED/TERFRAGMENTASI/STABIL/OPTIMAL","statusColor":"red/amber/blue/green","headline":"diagnosis satu kalimat spesifik","bottlenecks":[{"masalah":"bottleneck 1","solusi":"solusi konkret"},{"masalah":"bottleneck 2","solusi":"solusi konkret"}],"digitalHealth":{"score":"BAIK/WASPADA/KRITIS","scoreColor":"green/amber/red","finding":"temuan digital spesifik"},"leaks":["kebocoran 1","kebocoran 2"],"strengths":["kekuatan 1"],"actions":[{"time":"Hari ini","action":"tindakan"},{"time":"3 hari ini","action":"tindakan"},{"time":"Minggu ini","action":"tindakan"}],"insight":"insight mendalam 1-2 kalimat"}`;
 
     try {
       console.log("[LifeScanner] Fetching:", CONFIG.API_BASE);
@@ -565,7 +504,7 @@ PENTING:
         },
         body: JSON.stringify({
           model:      CONFIG.MODEL,
-          max_tokens: 1000,
+          max_tokens: 2000,
           messages:   [{ role: "user", content: prompt }],
         }),
       });
