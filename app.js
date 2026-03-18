@@ -585,8 +585,26 @@ PENTING:
       let data;
       try { data = JSON.parse(rawText); }
       catch { throw new Error("Respons bukan JSON valid: " + rawText.slice(0, 150)); }
-      const raw   = data.choices?.[0]?.message?.content || "";
+
+      // Log full structure untuk debug
+      console.log("[LifeScanner] Full response keys:", Object.keys(data));
+      console.log("[LifeScanner] Choices:", JSON.stringify(data.choices?.slice(0,1)));
+
+      // Coba berbagai path response
+      const raw =
+        data.choices?.[0]?.message?.content ||
+        data.choices?.[0]?.text ||
+        data.content ||
+        data.text ||
+        data.result ||
+        data.output ||
+        (typeof data.choices?.[0] === "string" ? data.choices[0] : "") ||
+        "";
+
       console.log("[LifeScanner] Raw AI:", raw.slice(0, 300));
+      if (!raw) {
+        throw new Error("Response kosong. Full response: " + JSON.stringify(data).slice(0, 300));
+      }
 
       // Coba 3 cara ekstrak JSON
       let diagnosis = null;
